@@ -35,7 +35,7 @@ def test_prediction_incorrecte():
     # Un résultat attendu volontairement faux
     with pytest.raises(AssertionError):
         assert response.json() == {
-            "predictions": [10.0, 20.0, 30.0]
+            "predictions": [10.0, 4.0, 6.0]
         }
  
  
