@@ -1,0 +1,58 @@
+name: CI–FastAPI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [dev]
+
+permissions:
+  contents: read
+
+jobs:
+  securite:
+    name: safety-mode
+    runs-on: ubuntu-24.04
+    steps:
+      # Récupérer le code
+      - name: Checkout code
+        uses: actions/checkout@v4
+      # Configurer Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      # Installer les dépendances dev
+      - name: Install dependencies (dev)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+          pip list
+      - name: Run safety check
+        run: |
+          safety check -r requirements-dev.txt || true
+          
+  test:
+    runs-on: ubuntu-24.04
+    needs: securite
+    steps:
+      # Récupérer le code
+      - name: Checkout code
+        uses: actions/checkout@v4
+      # Configurer Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      # Installer les dépendances dev
+      - name: Install dependencies (dev)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+          pip list
+      # Tests unitaires / async
+      - name: Run tests
+        run: |
+          export PYTHONPATH=$(pwd)
+          pytest --maxfail=1 --disable-warnings -q --cov=app --cov-report=term-missing
+      
