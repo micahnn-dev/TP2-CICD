@@ -1,0 +1,4 @@
+.venv 
+app/__pycache__
+test/__init__
+.coverage
